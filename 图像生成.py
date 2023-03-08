@@ -39,17 +39,28 @@ def getConZ():
         print(len(ar))#每加一张图片的像素个数
     L=4096
     W=int(len(ar)/L)
-    ar=np.reshape(ar,[W,L]) #list 转 ndarray
-    
-    ar=ar[ar==ar] #去nan,之后要重新划分图像
-    print('size without nan')
-    print(ar.shape)
-    L=4900
-    W=int(ar.shape[0]/L)
-    ar=ar[0:L*W]#重新划分为一个矩形，多余的像素舍弃掉。
-    ar=np.reshape(ar,[W,L])
-    
-    return ar
+    # ar=np.reshape(ar,[W,L]) #list 转 ndarray
+
+    # 定义三维数据
+    xx = np.arange(0, L, 1)
+    yy = np.arange(0, W, 1)
+    X, Y = np.meshgrid(xx, yy)
+
+    mask = ar==ar
+
+    X, Y, ar = X[mask], Y[mask], ar[mask]
+
+    return X, Y, ar
+
+    # ar=ar[ar==ar] #去nan,之后要重新划分图像
+    # print('size without nan')
+    # print(ar.shape)
+    # L=4900
+    # W=int(ar.shape[0]/L)
+    # ar=ar[0:L*W]#重新划分为一个矩形，多余的像素舍弃掉。
+    # ar=np.reshape(ar,[W,L])
+    #
+    # return ar
     #还是不行，没解决前面的问题
     #nan是在把所有bin拼起来以后才去掉的
                 
@@ -58,7 +69,7 @@ def getConZ():
     
 
 
-ar=getConZ()
+X, Y, ar=getConZ()
 print('done')
    
    
@@ -67,10 +78,10 @@ fig = plt.figure() #定义新的三维坐标轴
 ax3 = plt.axes(projection='3d')
 
 #定义三维数据
-xx = np.arange(0,L,1)
-yy = np.arange(0,W,1)
-
-X,Y = np.meshgrid(xx,yy)
+# xx = np.arange(0,L,1)
+# yy = np.arange(0,W,1)
+#
+# X,Y = np.meshgrid(xx,yy)
 # print(type(X))
 print(X.shape)
 print(Y.shape)
