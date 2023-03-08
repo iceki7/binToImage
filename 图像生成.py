@@ -1,23 +1,10 @@
 import struct
-# from mayavi import mlab
 import numpy as np
 import matplotlib.pyplot as plt
 
-fileCount = "27"
-filename = ["./2310178721_248",
-            "./2310178721_249",
-            "./2310178721_250",
-            ]  # 下划线前面的数一致的才是同一块钢板数据
 
-# m=np.array([7,9,3,np.nan,2,6,np.nan,1])
-# print(m[m==m])
-# exit()
 
-zsize = 3100 * 4096
 
-zr = []
-L = 0
-W = 0
 
 def avg_pooling_forward(z, pooling, strides=(2, 2), padding=(0, 0)):
     """
@@ -48,13 +35,13 @@ def avg_pooling_forward(z, pooling, strides=(2, 2), padding=(0, 0)):
                                                            strides[1] * j:strides[1] * j + pooling[1]])
     return pool_z
 
-def getConZ():
-    global L, W
+def getImgData(file_path_list):
+
     ar_list = []   # 他这个拼接的方向不是文件顺序的那个维度
     ar_last = None
-    for x in filename:  # 依次读文件
+    for x in file_path_list:  # 依次读文件
         ar = []
-        f = open(x + ".bin", "rb")
+        f = open(x, "rb")
         for i in range(zsize):
             data = f.read(4)  # 一个z值
             elem = struct.unpack("f", data)[0]  # bin转数字
@@ -63,8 +50,8 @@ def getConZ():
             # else:
             ar.append(elem)
         f.close()
-        print('size')
-        print(len(ar))  # 每加一张图片的像素个数
+        #print('size')
+        #print(len(ar))  # 每加一张图片的像素个数
         ar = np.reshape(ar, [4096, 3100])
 
         # 好像每张图片的高度0点不一样 强行让上一张最后一行数据对其下一张第一行数据
@@ -117,32 +104,35 @@ def getConZ():
     # 还是不行，没解决前面的问题
     # nan是在把所有bin拼起来以后才去掉的
 
+def getImg(file_path_list,output_path):
+    X, Y, ar = getImgData(file_path_list)
+    #print('done')
+    
+    
+    fig = plt.figure()  # 定义新的三维坐标轴
+    ax3 = plt.axes(projection='3d')
+    
+    
+    #print(X.shape)
+    #print(Y.shape)
+    #print(ar.shape)
+    
+    # #作图
+    ax3.set_facecolor('#000000') 
+    ax3.plot_surface(X, Y, ar, cmap='viridis')  # 模糊一点
+    plt.gca().view_init(30, -30)    #默认是30和-60
+    plt.gca().dist=7 #默认是10
+    plt.axis('off')
+    #plt.show()
+    fig.savefig(output_path,dpi=800,bbox_inches='tight')
+    
+    
+file_path_list = ["./2310178721_248.bin",
+            "./2310178721_249.bin",
+            "./2310178721_250.bin",
+            ]  # 下划线前面的数一致的才是同一块钢板数据
 
-X, Y, ar = getConZ()
-print('done')
+output_path='2310178721.png'  #绝对或相对路径
 
-# plt.hist(ar, bins=32)
-fig = plt.figure()  # 定义新的三维坐标轴
-
-ax3 = plt.axes(projection='3d')
-
-# 定义三维数据
-# xx = np.arange(0,L,1)
-# yy = np.arange(0,W,1)
-#
-# X,Y = np.meshgrid(xx,yy)
-# print(type(X))
-print(X.shape)
-print(Y.shape)
-print(ar.shape)
-
-# #作图
-#plt.rcParams['axes.facecolor']='#000000'
-ax3.set_facecolor('#000000') 
-ax3.plot_surface(X, Y, ar, cmap='viridis')  # 模糊一点
-# #ax3.contour(X,Y,Z，zdim='z',offset=-2，cmap='rainbow) #等高线图，要设置offset，为Z的最小值
-plt.gca().view_init(30, -30)    #默认是30和-60
-plt.gca().dist=7 #默认是10
-plt.axis('off')
-plt.show()
-fig.savefig('2310178721.png',dpi=800,bbox_inches='tight')
+zsize = 3100 * 4096     #z值采样的长和宽
+getImg(file_path_list,output_path)
