@@ -49,6 +49,9 @@ def getConZ():
         ar_list.append(ar)
 
     ar = np.concatenate(ar_list, 0)
+    factor = 100
+    ar = ar[(factor//2)::factor, (factor//2)::factor]
+
     L = ar.shape[0]
     W = ar.shape[1]
     # ar=np.reshape(ar,[W,L]) #list 转 ndarray
@@ -87,7 +90,7 @@ def getConZ():
 X, Y, ar = getConZ()
 print('done')
 
-plt.hist(ar, bins=32)
+# plt.hist(ar, bins=32)
 fig = plt.figure()  # 定义新的三维坐标轴
 
 ax3 = plt.axes(projection='3d')
@@ -104,7 +107,7 @@ print(ar.shape)
 
 # #作图
 plt.rcParams['axes.facecolor']='#000000'
-ax3.plot_surface(X, Y, ar, rstride=8, cstride=8, cmap='rainbow')  # 模糊一点
+ax3.plot_surface(X, Y, ar, cmap='rainbow')  # 模糊一点
 # #ax3.contour(X,Y,Z，zdim='z',offset=-2，cmap='rainbow) #等高线图，要设置offset，为Z的最小值
 plt.gca().view_init(30, -30)    #默认是30和-60
 plt.axis('off')
