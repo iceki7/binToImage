@@ -103,8 +103,10 @@ print(Y.shape)
 print(ar.shape)
 
 # #作图
-ax3.plot_surface(X, Y, ar, rstride=128, cstride=128, cmap='rainbow')  # 模糊一点
+plt.rcParams['axes.facecolor']='#000000'
+ax3.plot_surface(X, Y, ar, rstride=8, cstride=8, cmap='rainbow')  # 模糊一点
 # #ax3.contour(X,Y,Z，zdim='z',offset=-2，cmap='rainbow) #等高线图，要设置offset，为Z的最小值
-# #plt.axis('off')
+plt.gca().view_init(30, -30)    #默认是30和-60
+plt.axis('off')
 plt.show()
-# fig.savefig(filename+'.png')
+fig.savefig('2310178721.png',dpi=800,bbox_inches='tight')
