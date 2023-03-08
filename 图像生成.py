@@ -137,10 +137,12 @@ print(Y.shape)
 print(ar.shape)
 
 # #作图
-plt.rcParams['axes.facecolor']='#000000'
+#plt.rcParams['axes.facecolor']='#000000'
+ax3.set_facecolor('#000000')
 ax3.plot_surface(X, Y, ar, cmap='viridis')  # 模糊一点
 # #ax3.contour(X,Y,Z，zdim='z',offset=-2，cmap='rainbow) #等高线图，要设置offset，为Z的最小值
 plt.gca().view_init(30, -10)    #默认是30和-60
+plt.gca().dist=7 #默认是10
 plt.axis('off')
 plt.show()
 fig.savefig('2310178721.png',dpi=800,bbox_inches='tight')
