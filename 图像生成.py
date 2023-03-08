@@ -19,6 +19,34 @@ zr = []
 L = 0
 W = 0
 
+def avg_pooling_forward(z, pooling, strides=(2, 2), padding=(0, 0)):
+    """
+    平均池化前向过程
+    :param z: 卷积层矩阵,形状(N,C,H,W)，N为batch_size，C为通道数
+    :param pooling: 池化大小(k1,k2)
+    :param strides: 步长
+    :param padding: 0填充
+    :return:
+    """
+    N, C, H, W = z.shape
+    # 零填充
+    padding_z = np.lib.pad(z, ((0, 0), (0, 0), (padding[0], padding[0]), (padding[1], padding[1])), 'constant',
+                           constant_values=0)
+
+    # 输出的高度和宽度
+    out_h = (H + 2 * padding[0] - pooling[0]) // strides[0] + 1
+    out_w = (W + 2 * padding[1] - pooling[1]) // strides[1] + 1
+
+    pool_z = np.zeros((N, C, out_h, out_w))
+
+    for n in np.arange(N):
+        for c in np.arange(C):
+            for i in np.arange(out_h):
+                for j in np.arange(out_w):
+                    pool_z[n, c, i, j] = np.mean(padding_z[n, c,
+                                                           strides[0] * i:strides[0] * i + pooling[0],
+                                                           strides[1] * j:strides[1] * j + pooling[1]])
+    return pool_z
 
 def getConZ():
     global L, W
@@ -49,8 +77,11 @@ def getConZ():
         ar_list.append(ar)
 
     ar = np.concatenate(ar_list, 0)
-    factor = 100
-    ar = ar[(factor//2)::factor, (factor//2)::factor]
+
+    ar = avg_pooling_forward(np.expand_dims(ar, [0, 1]), (30,30),(5,5))[0,0]
+
+    # factor = 100
+    # ar = ar[(factor//2)::factor, (factor//2)::factor]
 
     L = ar.shape[0]
     W = ar.shape[1]
@@ -106,10 +137,12 @@ print(Y.shape)
 print(ar.shape)
 
 # #作图
-plt.rcParams['axes.facecolor']='#000000'
-ax3.plot_surface(X, Y, ar, cmap='rainbow')  # 模糊一点
+#plt.rcParams['axes.facecolor']='#000000'
+ax3.set_facecolor('#000000') 
+ax3.plot_surface(X, Y, ar, cmap='viridis')  # 模糊一点
 # #ax3.contour(X,Y,Z，zdim='z',offset=-2，cmap='rainbow) #等高线图，要设置offset，为Z的最小值
 plt.gca().view_init(30, -30)    #默认是30和-60
+plt.gca().dist=7 #默认是10
 plt.axis('off')
 plt.show()
 fig.savefig('2310178721.png',dpi=800,bbox_inches='tight')
