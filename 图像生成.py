@@ -33,34 +33,21 @@ def avg_pooling_forward(z, pooling, strides=(2, 2), padding=(0, 0)):
     return pool_z
 
 
-def getImgData(file_path_list):
-    ar_list = []  # 他这个拼接的方向不是文件顺序的那个维度
-    ar_last = None
-    for x in file_path_list:  # 依次读文件
-        ar = []
-        f = open(x, "rb")
-        for i in range(zsize):
-            data = f.read(4)  # 一个z值
-            elem = struct.unpack("f", data)[0]  # bin转数字
-            # if(elem!=elem): #去掉nan
-            #    pass
-            # else:
-            ar.append(elem)
-        f.close()
-        # print('size')
-        # print(len(ar))  # 每加一张图片的像素个数
-        ar = np.reshape(ar, [4096, 3100])
-
-        # 好像每张图片的高度0点不一样 强行让上一张最后一行数据对其下一张第一行数据
-        if ar_last is not None:
-            ar_first = ar[1, :]
-            bias = ar_first - ar_last
-            bias = np.average(bias[~np.isnan(bias)])
-            ar -= bias
-        ar_last = ar[-1, :]
-        ar_list.append(ar)
-
-    ar = np.concatenate(ar_list, 0)
+def getImgData(file_path):
+    x=file_path  # 依次读文件
+    ar = []
+    f = open(x, "rb")
+    for i in range(zsize):
+        data = f.read(4)  # 一个z值
+        elem = struct.unpack("f", data)[0]  # bin转数字
+        # if(elem!=elem): #去掉nan
+        #    pass
+        # else:
+        ar.append(elem)
+    f.close()
+    # print('size')
+    # print(len(ar))  # 每加一张图片的像素个数
+    ar = np.reshape(ar, [4096, 3100])
 
     ar = avg_pooling_forward(np.expand_dims(ar, [0, 1]), (50, 50), (2, 2))[0, 0]
 
@@ -112,8 +99,8 @@ def set_axes_equal(ax,X,Y,Z):
     ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
 
-def getImg(file_path_list, output_path):
-    X, Y, ar = getImgData(file_path_list)
+def getImg(file_path, output_path):
+    X, Y, ar = getImgData(file_path)
     # print('done')
 
     fig = plt.figure()  # 定义新的三维坐标轴
@@ -128,19 +115,17 @@ def getImg(file_path_list, output_path):
     # #作图
     ax3.set_facecolor('#000000')
     ax3.plot_surface(X, Y, ar, cstride=1, rstride=1, cmap='viridis')  # 模糊一点
-    plt.gca().view_init(70, -30)  # 默认是30和-60
+    plt.gca().view_init(20, -30)  # 默认是30和-60
     plt.gca().dist = 7  # 默认是10
     plt.axis('off')
     # plt.show()
     fig.savefig(output_path, dpi=800, bbox_inches='tight')
 
 
-file_path_list1 = ["./2310178721_248.bin",
-                   ]  # 下划线前面的数一致的才是同一块钢板数据
-file_path_list2 = ["./2310178711_269.bin",
-                   ]  # 下划线前面的数一致的才是同一块钢板数据
+file_path1 = "./2310178721_248.bin"
+file_path2 = "./2310178711_269.bin"
 
 output_path = '23101787211.png'  # 绝对或相对路径
 
 zsize = 3100 * 4096  # z值采样的长和宽
-getImg(file_path_list2, output_path)
+getImg(file_path2, output_path)
