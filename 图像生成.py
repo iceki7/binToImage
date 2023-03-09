@@ -3,9 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
-
-
 def avg_pooling_forward(z, pooling, strides=(2, 2), padding=(0, 0)):
     """
     平均池化前向过程
@@ -31,13 +28,13 @@ def avg_pooling_forward(z, pooling, strides=(2, 2), padding=(0, 0)):
             for i in np.arange(out_h):
                 for j in np.arange(out_w):
                     pool_z[n, c, i, j] = np.mean(padding_z[n, c,
-                                                           strides[0] * i:strides[0] * i + pooling[0],
-                                                           strides[1] * j:strides[1] * j + pooling[1]])
+                                                 strides[0] * i:strides[0] * i + pooling[0],
+                                                 strides[1] * j:strides[1] * j + pooling[1]])
     return pool_z
 
-def getImgData(file_path_list):
 
-    ar_list = []   # 他这个拼接的方向不是文件顺序的那个维度
+def getImgData(file_path_list):
+    ar_list = []  # 他这个拼接的方向不是文件顺序的那个维度
     ar_last = None
     for x in file_path_list:  # 依次读文件
         ar = []
@@ -50,8 +47,8 @@ def getImgData(file_path_list):
             # else:
             ar.append(elem)
         f.close()
-        #print('size')
-        #print(len(ar))  # 每加一张图片的像素个数
+        # print('size')
+        # print(len(ar))  # 每加一张图片的像素个数
         ar = np.reshape(ar, [4096, 3100])
 
         # 好像每张图片的高度0点不一样 强行让上一张最后一行数据对其下一张第一行数据
@@ -65,7 +62,7 @@ def getImgData(file_path_list):
 
     ar = np.concatenate(ar_list, 0)
 
-    ar = avg_pooling_forward(np.expand_dims(ar, [0, 1]), (30,30),(5,5))[0,0]
+    ar = avg_pooling_forward(np.expand_dims(ar, [0, 1]), (50, 50), (2, 2))[0, 0]
 
     # factor = 100
     # ar = ar[(factor//2)::factor, (factor//2)::factor]
@@ -75,7 +72,7 @@ def getImgData(file_path_list):
     # ar=np.reshape(ar,[W,L]) #list 转 ndarray
 
     # 定义三维数据
-    xx = np.arange(0, W, 1)   # 他这个拼接的方向不是文件顺序的那个维度
+    xx = np.arange(0, W, 1)  # 他这个拼接的方向不是文件顺序的那个维度
     yy = np.arange(0, L, 1)
     X, Y = np.meshgrid(xx, yy)
 
@@ -104,35 +101,38 @@ def getImgData(file_path_list):
     # 还是不行，没解决前面的问题
     # nan是在把所有bin拼起来以后才去掉的
 
-def getImg(file_path_list,output_path):
+
+def getImg(file_path_list, output_path):
     X, Y, ar = getImgData(file_path_list)
-    #print('done')
-    
-    
+    # print('done')
+
     fig = plt.figure()  # 定义新的三维坐标轴
     ax3 = plt.axes(projection='3d')
-    
-    
-    #print(X.shape)
-    #print(Y.shape)
-    #print(ar.shape)
-    
+
+    # print(X.shape)
+    # print(Y.shape)
+    # print(ar.shape)
+
     # #作图
-    ax3.set_facecolor('#000000') 
-    ax3.plot_surface(X, Y, ar, cmap='viridis')  # 模糊一点
-    plt.gca().view_init(30, -30)    #默认是30和-60
-    plt.gca().dist=7 #默认是10
+    ax3.set_facecolor('#000000')
+    ax3.plot_surface(X, Y, ar, cstride=1, rstride=1, cmap='viridis')  # 模糊一点
+    plt.gca().view_init(80, -30)  # 默认是30和-60
+    plt.gca().dist = 7  # 默认是10
     plt.axis('off')
-    #plt.show()
-    fig.savefig(output_path,dpi=800,bbox_inches='tight')
-    
-    
-file_path_list = ["./2310178721_248.bin",
-            "./2310178721_249.bin",
-            "./2310178721_250.bin",
-            ]  # 下划线前面的数一致的才是同一块钢板数据
+    # plt.show()
+    fig.savefig(output_path, dpi=800, bbox_inches='tight')
 
-output_path='2310178721.png'  #绝对或相对路径
 
-zsize = 3100 * 4096     #z值采样的长和宽
-getImg(file_path_list,output_path)
+file_path_list1 = ["./2310178721_248.bin",
+                   "./2310178721_249.bin",
+                   "./2310178721_250.bin",
+                   ]  # 下划线前面的数一致的才是同一块钢板数据
+file_path_list2 = ["./2310178711_269.bin",
+                   "./2310178711_270.bin",
+                   "./2310178711_271.bin",
+                   ]  # 下划线前面的数一致的才是同一块钢板数据
+
+output_path = '23101787211.png'  # 绝对或相对路径
+
+zsize = 3100 * 4096  # z值采样的长和宽
+getImg(file_path_list2, output_path)
