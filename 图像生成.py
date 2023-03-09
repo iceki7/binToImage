@@ -101,6 +101,16 @@ def getImgData(file_path_list):
     # 还是不行，没解决前面的问题
     # nan是在把所有bin拼起来以后才去掉的
 
+def set_axes_equal(ax,X,Y,Z):
+    max_range = np.array([np.nanmax(X) - np.nanmin(X), np.nanmax(Y) - np.nanmin(Y), np.nanmax(Z) - np.nanmin(Z)]).max() / 2.0
+
+    mid_x = (np.nanmax(X) + np.nanmin(X)) * 0.5
+    mid_y = (np.nanmax(Y) + np.nanmin(Y)) * 0.5
+    mid_z = (np.nanmax(Z) + np.nanmin(Z)) * 0.5
+    ax.set_xlim(mid_x - max_range, mid_x + max_range)
+    ax.set_ylim(mid_y - max_range, mid_y + max_range)
+    ax.set_zlim(mid_z - max_range, mid_z + max_range)
+
 
 def getImg(file_path_list, output_path):
     X, Y, ar = getImgData(file_path_list)
@@ -108,6 +118,8 @@ def getImg(file_path_list, output_path):
 
     fig = plt.figure()  # 定义新的三维坐标轴
     ax3 = plt.axes(projection='3d')
+    # ax3.set_box_aspect([1,1,1])
+    set_axes_equal(ax3,X,Y,ar)
 
     # print(X.shape)
     # print(Y.shape)
@@ -116,7 +128,7 @@ def getImg(file_path_list, output_path):
     # #作图
     ax3.set_facecolor('#000000')
     ax3.plot_surface(X, Y, ar, cstride=1, rstride=1, cmap='viridis')  # 模糊一点
-    plt.gca().view_init(80, -30)  # 默认是30和-60
+    plt.gca().view_init(70, -30)  # 默认是30和-60
     plt.gca().dist = 7  # 默认是10
     plt.axis('off')
     # plt.show()
@@ -124,12 +136,8 @@ def getImg(file_path_list, output_path):
 
 
 file_path_list1 = ["./2310178721_248.bin",
-                   "./2310178721_249.bin",
-                   "./2310178721_250.bin",
                    ]  # 下划线前面的数一致的才是同一块钢板数据
 file_path_list2 = ["./2310178711_269.bin",
-                   "./2310178711_270.bin",
-                   "./2310178711_271.bin",
                    ]  # 下划线前面的数一致的才是同一块钢板数据
 
 output_path = '23101787211.png'  # 绝对或相对路径
