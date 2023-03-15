@@ -34,19 +34,8 @@ def avg_pooling_forward(z, pooling, strides=(2, 2), padding=(0, 0)):
 
 
 def getImgData(file_path):
-    x=file_path  # 依次读文件
-    ar = []
-    f = open(x, "rb")
-    for i in range(zsize):
-        data = f.read(4)  # 一个z值
-        elem = struct.unpack("f", data)[0]  # bin转数字
-        # if(elem!=elem): #去掉nan
-        #    pass
-        # else:
-        ar.append(elem)
-    f.close()
-    # print('size')
-    # print(len(ar))  # 每加一张图片的像素个数
+    x = file_path  # 依次读文件
+    ar = np.fromfile(x, dtype=np.float32).astype(np.float64)[:zsize]
     ar = np.reshape(ar, [4096, 3100])
 
     ar = avg_pooling_forward(np.expand_dims(ar, [0, 1]), (50, 50), (2, 2))[0, 0]
@@ -88,8 +77,10 @@ def getImgData(file_path):
     # 还是不行，没解决前面的问题
     # nan是在把所有bin拼起来以后才去掉的
 
-def set_axes_equal(ax,X,Y,Z):
-    max_range = np.array([np.nanmax(X) - np.nanmin(X), np.nanmax(Y) - np.nanmin(Y), np.nanmax(Z) - np.nanmin(Z)]).max() / 2.0
+
+def set_axes_equal(ax, X, Y, Z):
+    max_range = np.array(
+        [np.nanmax(X) - np.nanmin(X), np.nanmax(Y) - np.nanmin(Y), np.nanmax(Z) - np.nanmin(Z)]).max() / 2.0
 
     mid_x = (np.nanmax(X) + np.nanmin(X)) * 0.5
     mid_y = (np.nanmax(Y) + np.nanmin(Y)) * 0.5
@@ -106,7 +97,7 @@ def getImg(file_path, output_path):
     fig = plt.figure()  # 定义新的三维坐标轴
     ax3 = plt.axes(projection='3d')
     # ax3.set_box_aspect([1,1,1])
-    set_axes_equal(ax3,X,Y,ar)
+    set_axes_equal(ax3, X, Y, ar)
 
     # print(X.shape)
     # print(Y.shape)
@@ -122,10 +113,10 @@ def getImg(file_path, output_path):
     fig.savefig(output_path, dpi=800, bbox_inches='tight')
 
 
-file_path1 = "./2310178721_248.bin"
-file_path2 = "./2310178711_269.bin"
+file_path1 = "./2330203432_23.bin"
+# file_path2 = "./2310178711_269.bin"
 
 output_path = '23101787211.png'  # 绝对或相对路径
 
 zsize = 3100 * 4096  # z值采样的长和宽
-getImg(file_path2, output_path)
+getImg(file_path1, output_path)
