@@ -38,7 +38,8 @@ def getImgData(file_path):
     ar = np.fromfile(x, dtype=np.float32).astype(np.float64)[:zsize]
     ar = np.reshape(ar, [4096, 3100])
 
-    ar = avg_pooling_forward(np.expand_dims(ar, [0, 1]), (50, 50), (2, 2))[0, 0]
+    ar = avg_pooling_forward(np.expand_dims(ar, [0, 1]), (20, 20), (2, 2))[0, 0]  # stride
+    # ar = ar[5::10,5::10]
 
     # factor = 100
     # ar = ar[(factor//2)::factor, (factor//2)::factor]
