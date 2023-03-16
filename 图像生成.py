@@ -38,7 +38,7 @@ def getImgData(file_path):
     ar = np.fromfile(x, dtype=np.float32).astype(np.float64)[:zsize]
     ar = np.reshape(ar, [4096, 3100])
 
-    ar = avg_pooling_forward(np.expand_dims(ar, [0, 1]), (20, 20), (5, 5))[0, 0]  # stride
+    # ar = avg_pooling_forward(np.expand_dims(ar, [0, 1]), (20, 20), (5, 5))[0, 0]  # stride
     # ar = ar[5::10,5::10]
 
     # factor = 100
@@ -106,7 +106,7 @@ def getImg(file_path, output_path):
 
     # #作图
     ax3.set_facecolor('#000000')
-    ax3.plot_surface(X, Y, ar, cstride=1, rstride=1, cmap='viridis')  # 模糊一点
+    ax3.plot_surface(X, Y, ar, cstride=8, rstride=8, cmap='viridis',antialiased=False)  # 模糊一点
     plt.gca().view_init(20, -30)  # 默认是30和-60
     plt.gca().dist = 7  # 默认是10
     plt.axis('off')
